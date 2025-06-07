@@ -7,17 +7,8 @@
 
 ```bash
 brew install cmake protobuf boost
-```
-
-```bash
 brew install --cask xquartz
-```
-
-```bash
 brew install openblas
-```
-
-```bash
 brew install opencv
 ```
 
