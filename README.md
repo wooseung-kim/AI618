@@ -59,16 +59,10 @@ make -j$(sysctl -n hw.logicalcpu)
 ./build/examples/openpose/openpose.bin \
   --image_dir ./videos/video_4/extracted_frames \
   --model_pose BODY_25 \
-  --face \
-  --hand \
-  --face_net_resolution "128x128" \
-  --hand_net_resolution "128x128" \
   --net_resolution "-1x256" \
   --scale_number 1 \
   --scale_gap 0.3 \
   --render_pose 1 \
-  --face_render 1 \
-  --hand_render 1 \
   --display 0 \
   --disable_blending \
   --write_json ./videos/video_4/keypoints_json \
