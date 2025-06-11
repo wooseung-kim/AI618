@@ -1,0 +1,7 @@
+diffusers
+transformers
+opencv-python
+einops
+omegaconf
+pytorch_lightning
+tqdm
