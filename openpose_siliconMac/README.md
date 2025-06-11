@@ -1,238 +1,67 @@
-# Installation of OpenPose + Caffe + Python API in M1 chip Mac
+## OpenPose Setup Guide (macOS for Silicon Mac)
 
-<div align="center">
-    <img src=".github/Logo_main_black.png" width="300">
-</div>
+### 1. Install Dependencies
 
-## Overview
-This repository was created for the only purpose of showing a successful method for installing the CMU Perceptual Computing Lab's [OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose), commit `1d95a1a67f543ac76e6519941a3cfea55e2d5743 (openpose/master)` at the moment of creation, in `CPU_ONLY` mode with the linked Caffe version in a MacOS computer with M1 chip.
-
-**Update 2024/06/05 ** Python API could also be build, without making any modification. Just check the box of `BUILD_PYTHON` when you open the Cmake GUI.
-
-Caffe's documentation requests a Python 2 version, but the usual environment manager on a Mac with an M1 chip doesn't support setting a 2.X version, leaving only the 3.X option. This demands the changes of some files.
-Additionally, the CMake files provided in the openpose repository (including caffe) did not come with the C++ compiler definitions and flags suitable for a smooth installation. Not finding the suitable C++ version while compiling the files produced various errors and time-consuming repairs during the build process. The highest C++ version required was C++17, therefore this version was set as default for the complete build.
-
-Below is a list of the common errors encountered by the community and experimented by your server.
-The changes done in the last [commit](https://github.com/franzcrs/openpose-with-caffe-for-MacM1/commit/e0e5833108d557d57ab825179f21f57444810c7e) `e0e5833 (this repo/master)` prevent these errors and guarantee a smooth build of OpenPose and Caffe.
-
-- [' C++ versions less than C++14 are not supported '](https://github.com/protocolbuffers/protobuf/issues/12393)
-- [' 'random_shuffle': is not a member of 'std' '](https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error)
-- [' no member/type names 'xx' in namespace 'yy' (a) ](https://github.com/onnx/onnx/issues/5532)[(b)'](https://github.com/BVLC/caffe/issues/7078)
-- [' Could NOT find vecLib (missing: vecLib_INCLUDE_DIR) '](https://github.com/CMU-Perceptual-Computing-Lab/openpose/issues/1248)
-- [' 'cblas.h' file not found #include <cblas.h> '](https://github.com/CMU-Perceptual-Computing-Lab/openpose/issues/1942)
-
-
-**Disclaimer:**
-This repository and Caffe are a copy of the OpenPose repository and the contained caffe git submodule, therefore I do not own the content uploaded in this repository. Only the changes done in the commits with my sign (franzcrs) including [commit](https://github.com/franzcrs/openpose-with-caffe-for-MacM1/commit/e0e5833108d557d57ab825179f21f57444810c7e) `e0e5833 (this repo/master)` are of my authorship.
-
-## Instructions
-
-1. Creation of virtual environment. This assumes you already have a python environment manager. I work with miniforge3 and following the steps [here](https://github.com/mrdbourke/m1-machine-learning-test#how-to-setup-a-tensorflow-environment-on-m1-m1-pro-m1-max-using-miniforge-shorter-version)
-```
-conda create -n openpose python=3.9
-```
-```
-conda activate openpose
-```
-2. Download models from alternative [source](https://github.com/CMU-Perceptual-Computing-Lab/openpose/issues/1602#issuecomment-641653411)
-3. Open terminal in the folder you wish and clone this repository
-```
-git clone https://github.com/franzcrs/openpose-with-caffe-for-MacM1
-```
-4. Copy the models in the corresponding folder (face, hand, pose) inside the repository `models/` folder
-5. Install Xcode Command Line Tools and homebrew if you haven't
-```
-xcode-select --install 
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-brew update
-```
-7. Install cmake cask
-```
-brew install --cask cmake
-```
-8. Enter the cloned repo and install the required dependencies in modified install_deps.sh
-```
-cd openpose-with-caffe-for-MacM1
-```
-```
-bash scripts/osx/install_deps.sh
-```
-9. Create a build folder
-```
-mkdir build
-cd build
-```
-10. Run cmake gui
-```
-cmake-gui ..
-```
-11. Make sure the folder paths point to the repository folder and the build folder. Image is example.
-        <img src=".github/media/installation/cmake_im_1.png" width="800">
-
-12. Make sure `BUILD_CAFFE` is checked and `GPU_MODE` is set as `CPU_ONLY`. Optionally you can check `BUILD_PYTHON` to build the Python API (tested). Click on Configure. Then with the default options click Finish. The monitor should show:
-```
-Configuring done (x.xs)
-``` 
-13. Click on Generate. The monitor should show:
-```
-Generating done (x.xs)
-```
-14. Finally run make. (In case of error, you may want to activate the verbose, by adding `VERBOSE=1` at the end of the instruction)
-```
-make -j`sysctl -n hw.logicalcpu`
-```
-15. The installation should finish by showing in the terminal:
-```
-[100%] Built target openpose_wrapper
-Built target openpose_lib
-```
-16. Test by using the webcam real-time video
-```
-cd ..
-./build/examples/openpose/openpose.bin
+```bash
+brew install cmake protobuf boost
+brew install --cask xquartz
+brew install openblas
+brew install opencv
 ```
 
+---
 
------------------
+### 2. Build with CMake
 
-| **Build Type**   |`Linux`           |`MacOS`           |`Windows`         |
-| :---:            | :---:            | :---:            | :---:            |
-| **Build Status** | [![Status](https://github.com/CMU-Perceptual-Computing-Lab/openpose/workflows/CI/badge.svg)](https://github.com/CMU-Perceptual-Computing-Lab/openpose/actions) | [![Status](https://github.com/CMU-Perceptual-Computing-Lab/openpose/workflows/CI/badge.svg)](https://github.com/CMU-Perceptual-Computing-Lab/openpose/actions) | [![Status](https://ci.appveyor.com/api/projects/status/5leescxxdwen77kg/branch/master?svg=true)](https://ci.appveyor.com/project/gineshidalgo99/openpose/branch/master) |
-
-[**OpenPose**](https://github.com/CMU-Perceptual-Computing-Lab/openpose) has represented the **first real-time multi-person system to jointly detect human body, hand, facial, and foot keypoints (in total 135 keypoints) on single images**.
-
-It is **authored by** [**Ginés Hidalgo**](https://www.gineshidalgo.com), [**Zhe Cao**](https://people.eecs.berkeley.edu/~zhecao), [**Tomas Simon**](http://www.cs.cmu.edu/~tsimon), [**Shih-En Wei**](https://scholar.google.com/citations?user=sFQD3k4AAAAJ&hl=en), [**Yaadhav Raaj**](https://www.raaj.tech), [**Hanbyul Joo**](https://jhugestar.github.io), **and** [**Yaser Sheikh**](http://www.cs.cmu.edu/~yaser). It is **maintained by** [**Ginés Hidalgo**](https://www.gineshidalgo.com) **and** [**Yaadhav Raaj**](https://www.raaj.tech). OpenPose would not be possible without the [**CMU Panoptic Studio dataset**](http://domedb.perception.cs.cmu.edu). We would also like to thank all the people who [have helped OpenPose in any way](doc/09_authors_and_contributors.md).
-
-
-
-<p align="center">
-    <img src=".github/media/pose_face_hands.gif" width="480">
-    <br>
-    <sup>Authors <a href="https://www.gineshidalgo.com" target="_blank">Ginés Hidalgo</a> (left) and <a href="https://jhugestar.github.io" target="_blank">Hanbyul Joo</a> (right) in front of the <a href="http://domedb.perception.cs.cmu.edu" target="_blank">CMU Panoptic Studio</a></sup>
-</p>
-
-
-
-## Contents
-1. [Results](#results)
-2. [Features](#features)
-3. [Related Work](#related-work)
-4. [Installation](#installation)
-5. [Quick Start Overview](#quick-start-overview)
-6. [Send Us Feedback!](#send-us-feedback)
-7. [Citation](#citation)
-8. [License](#license)
-
-
-
-## Results
-### Whole-body (Body, Foot, Face, and Hands) 2D Pose Estimation
-<p align="center">
-    <img src=".github/media/dance_foot.gif" width="300">
-    <img src=".github/media/pose_face.gif" width="300">
-    <img src=".github/media/pose_hands.gif" width="300">
-    <br>
-    <sup>Testing OpenPose: (Left) <a href="https://www.youtube.com/watch?v=2DiQUX11YaY" target="_blank"><i>Crazy Uptown Funk flashmob in Sydney</i></a> video sequence. (Center and right) Authors <a href="https://www.gineshidalgo.com" target="_blank">Ginés Hidalgo</a> and <a href="http://www.cs.cmu.edu/~tsimon" target="_blank">Tomas Simon</a> testing face and hands</sup>
-</p>
-
-### Whole-body 3D Pose Reconstruction and Estimation
-<p align="center">
-    <img src=".github/media/openpose3d.gif" width="360">
-    <br>
-    <sup><a href="https://ziutinyat.github.io/" target="_blank">Tianyi Zhao</a> testing the OpenPose 3D Module</a></sup>
-</p>
-
-### Unity Plugin
-<p align="center">
-    <img src=".github/media/unity_main.png" width="300">
-    <img src=".github/media/unity_body_foot.png" width="300">
-    <img src=".github/media/unity_hand_face.png" width="300">
-    <br>
-    <sup><a href="https://ziutinyat.github.io/" target="_blank">Tianyi Zhao</a> and <a href="https://www.gineshidalgo.com" target="_blank">Ginés Hidalgo</a> testing the <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose_unity_plugin" target="_blank">OpenPose Unity Plugin</a></sup>
-</p>
-
-### Runtime Analysis
-We show an inference time comparison between the 3 available pose estimation libraries (same hardware and conditions): OpenPose, Alpha-Pose (fast Pytorch version), and Mask R-CNN. The OpenPose runtime is constant, while the runtime of Alpha-Pose and Mask R-CNN grow linearly with the number of people. More details [**here**](https://arxiv.org/abs/1812.08008).
-
-<p align="center">
-    <img src=".github/media/openpose_vs_competition.png" width="360">
-</p>
-
-
-
-## Features
-**Main Functionality**:
-- **2D real-time multi-person keypoint detection**:
-    - 15, 18 or **25-keypoint body/foot keypoint estimation**, including **6 foot keypoints**. **Runtime invariant to number of detected people**.
-    - **2x21-keypoint hand keypoint estimation**. **Runtime depends on number of detected people**. See [**OpenPose Training**](https://github.com/CMU-Perceptual-Computing-Lab/openpose_train) for a runtime invariant alternative.
-    - **70-keypoint face keypoint estimation**. **Runtime depends on number of detected people**. See [**OpenPose Training**](https://github.com/CMU-Perceptual-Computing-Lab/openpose_train) for a runtime invariant alternative.
-- [**3D real-time single-person keypoint detection**](doc/advanced/3d_reconstruction_module.md):
-    - 3D triangulation from multiple single views.
-    - Synchronization of Flir cameras handled.
-    - Compatible with Flir/Point Grey cameras.
-- [**Calibration toolbox**](doc/advanced/calibration_module.md): Estimation of distortion, intrinsic, and extrinsic camera parameters.
-- **Single-person tracking** for further speedup or visual smoothing.
-
-**Input**: Image, video, webcam, Flir/Point Grey, IP camera, and support to add your own custom input source (e.g., depth camera).
-
-**Output**: Basic image + keypoint display/saving (PNG, JPG, AVI, ...), keypoint saving (JSON, XML, YML, ...), keypoints as array class, and support to add your own custom output code (e.g., some fancy UI).
-
-**OS**: Ubuntu (20, 18, 16, 14), Windows (10, 8), Mac OSX, Nvidia TX2.
-
-**Hardware compatibility**: CUDA (Nvidia GPU), OpenCL (AMD GPU), and non-GPU (CPU-only) versions.
-
-**Usage Alternatives**:
-- [**Command-line demo**](doc/01_demo.md) for built-in functionality.
-- [**C++ API**](doc/04_cpp_api.md/) and [**Python API**](doc/03_python_api.md) for custom functionality. E.g., adding your custom inputs, pre-processing, post-posprocessing, and output steps.
-
-For further details, check the [major released features](doc/07_major_released_features.md) and [release notes](doc/08_release_notes.md) docs.
-
-
-
-## Related Work
-- [**OpenPose training code**](https://github.com/CMU-Perceptual-Computing-Lab/openpose_train)
-- [**OpenPose foot dataset**](https://cmu-perceptual-computing-lab.github.io/foot_keypoint_dataset/)
-- [**OpenPose Unity Plugin**](https://github.com/CMU-Perceptual-Computing-Lab/openpose_unity_plugin)
-- OpenPose papers published in **IEEE TPAMI and CVPR**. Cite them in your publications if OpenPose helps your research! (Links and more details in the [Citation](#citation) section below).
-
-
-
-## Installation
-If you want to use OpenPose without installing or writing any code, simply [download and use the latest Windows portable version of OpenPose](doc/installation/0_index.md#windows-portable-demo)!
-
-Otherwise, you could [build OpenPose from source](doc/installation/0_index.md#compiling-and-running-openpose-from-source). See the [installation doc](doc/installation/0_index.md) for all the alternatives.
-
-
-
-## Quick Start Overview
-Simply use the OpenPose Demo from your favorite command-line tool (e.g., Windows PowerShell or Ubuntu Terminal). E.g., this example runs OpenPose on your webcam and displays the body keypoints:
-```
-# Ubuntu
-./build/examples/openpose/openpose.bin
-```
-```
-:: Windows - Portable Demo
-bin\OpenPoseDemo.exe --video examples\media\video.avi
+```bash
+mkdir build && cd build
 ```
 
-You can also add any of the available flags in any order. E.g., the following example runs on a video (`--video {PATH}`), enables face (`--face`) and hands (`--hand`), and saves the output keypoints on JSON files on disk (`--write_json {PATH}`).
-```
-# Ubuntu
-./build/examples/openpose/openpose.bin --video examples/media/video.avi --face --hand --write_json output_json_folder/
-```
-```
-:: Windows - Portable Demo
-bin\OpenPoseDemo.exe --video examples\media\video.avi --face --hand --write_json output_json_folder/
+```bash
+cmake .. \
+  -DBUILD_PYTHON=ON \
+  -DUSE_MKL=OFF \
+  -DUSE_CUDNN=OFF \
+  -DBLAS=Open \
+  -DOpenBLAS_INCLUDE_DIR=/opt/homebrew/opt/openblas/include \
+  -DOpenBLAS_LIB=/opt/homebrew/opt/openblas/lib/libopenblas.dylib \
+  -DCMAKE_CXX_STANDARD=17 \
+  -DCMAKE_CXX_FLAGS="-I/opt/homebrew/opt/openblas/include" \
+  -DCMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/openblas/lib" \
+  -DPYTHON_EXECUTABLE=$(which python3)
 ```
 
-Optionally, you can also extend OpenPose's functionality from its Python and C++ APIs. After [installing](doc/installation/0_index.md) OpenPose, check its [official doc](doc/00_index.md) for a quick overview of all the alternatives and tutorials.
+---
 
+### 3. Compile OpenPose
 
+```bash
+make -j$(sysctl -n hw.logicalcpu)
+```
 
-## Send Us Feedback!
-Our library is open source for research purposes, and we want to improve it! So let us know (create a new GitHub issue or pull request, email us, etc.) if you...
-1. Find/fix any bug (in functionality or speed) or know how to speed up or improve any part of OpenPose.
-2. Want to add/show some cool functionality/demo/project made on top of OpenPose. We can add your project link to our [Community-based Projects](doc/10_community_projects.md) section or even integrate it with OpenPose!
+---
+
+### 4. Run OpenPose (Single Image Folder)
+
+```bash
+./build/examples/openpose/openpose.bin \
+  --image_dir ./videos/video_4/extracted_frames \
+  --model_pose BODY_25 \
+  --net_resolution "-1x256" \
+  --scale_number 1 \
+  --scale_gap 0.3 \
+  --render_pose 1 \
+  --display 0 \
+  --disable_blending \
+  --write_json ./videos/video_4/keypoints_json \
+  --write_images ./videos/video_4/pose_frames \
+  --disable_multi_thread
+```
+
+> 💡 **Output**:  
+> - JSON keypoints → `./videos/video_4/keypoints_json/`  
+> - Rendered pose images → `./videos/video_4/pose_frames/`
+
 
 
 
