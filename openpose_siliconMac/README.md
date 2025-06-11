@@ -46,7 +46,7 @@ make -j$(sysctl -n hw.logicalcpu)
 ```bash
 ./build/examples/openpose/openpose.bin \
   --image_dir ./videos/video_4/extracted_frames \
-  --model_pose BODY_25 \
+  --model_pose COCO \
   --net_resolution "-1x256" \
   --scale_number 1 \
   --scale_gap 0.3 \
@@ -61,49 +61,6 @@ make -j$(sysctl -n hw.logicalcpu)
 > 💡 **Output**:  
 > - JSON keypoints → `./videos/video_4/keypoints_json/`  
 > - Rendered pose images → `./videos/video_4/pose_frames/`
-
-
-
-
-## Citation
-Please cite these papers in your publications if OpenPose helps your research. All of OpenPose is based on [OpenPose: Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields](https://arxiv.org/abs/1812.08008), while the hand and face detectors also use [Hand Keypoint Detection in Single Images using Multiview Bootstrapping](https://arxiv.org/abs/1704.07809) (the face detector was trained using the same procedure as the hand detector).
-
-    @article{8765346,
-      author = {Z. {Cao} and G. {Hidalgo Martinez} and T. {Simon} and S. {Wei} and Y. A. {Sheikh}},
-      journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-      title = {OpenPose: Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields},
-      year = {2019}
-    }
-
-    @inproceedings{simon2017hand,
-      author = {Tomas Simon and Hanbyul Joo and Iain Matthews and Yaser Sheikh},
-      booktitle = {CVPR},
-      title = {Hand Keypoint Detection in Single Images using Multiview Bootstrapping},
-      year = {2017}
-    }
-
-    @inproceedings{cao2017realtime,
-      author = {Zhe Cao and Tomas Simon and Shih-En Wei and Yaser Sheikh},
-      booktitle = {CVPR},
-      title = {Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields},
-      year = {2017}
-    }
-
-    @inproceedings{wei2016cpm,
-      author = {Shih-En Wei and Varun Ramakrishna and Takeo Kanade and Yaser Sheikh},
-      booktitle = {CVPR},
-      title = {Convolutional pose machines},
-      year = {2016}
-    }
-
-Paper links:
-- OpenPose: Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields:
-    - [IEEE TPAMI](https://ieeexplore.ieee.org/document/8765346)
-    - [ArXiv](https://arxiv.org/abs/1812.08008)
-- [Hand Keypoint Detection in Single Images using Multiview Bootstrapping](https://arxiv.org/abs/1704.07809)
-- [Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields](https://arxiv.org/abs/1611.08050)
-- [Convolutional Pose Machines](https://arxiv.org/abs/1602.00134)
-
 
 
 ## License
